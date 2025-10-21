@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:8-alpine
+    container_name: beaver-redis
+    command: >
+      redis-server
+      --port 6380
+      --maxmemory 512mb
+      --maxmemory-policy allkeys-lru
+      --save ""
+    ports:
+      - "6380:6380"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "-p", "6380", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - beaver-net
+
+  beaver-ttp:
+    build: .
+    container_name: beaver-ttp
+    ports:
+      - "8090:8090"
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6380
+      - TTL=300
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - beaver-net
+
+networks:
+  beaver-net:
+    driver: bridge
