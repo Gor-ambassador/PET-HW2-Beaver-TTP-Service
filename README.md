@@ -13,7 +13,7 @@ docker-compose up --build -d # в режиме демона
 ```bash
 curl http://localhost:8090/api/health
 ```
-####Ошибка
+#### Ошибка
 curl: (7) Failed to connect to localhost port 8090 after 0 ms: В соединении отказано
 #### Успех
 {"redis":"connected","status":"healthy"}
